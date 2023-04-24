@@ -17,12 +17,13 @@ get_package_content()
 {
     mkdir -p cache
     package=$1
-    url=$(curl -s https://pub.dartlang.org/api/packages/$package |
+    local url=$(curl -s https://pub.dartlang.org/api/packages/$package |
           jq -r .latest.archive_url)
     version=$(basename $url)
     cached=cache/${package}_${version}.content
-    if [ ! -f $cached ]; then
-        wget -q $content -O - | tar tzf - 2>/dev/null > $cached.part
+    # check if cache file exists AND is not empty
+    if [ ! -f $cached ] || [ ! -s $cached ]; then
+        wget -q $url -O - | tar tzf - 2>/dev/null > $cached.part &&
         mv $cached.part $cached
     fi
     cat $cached | sed -e "s/^/$package:$version:/"
@@ -38,6 +39,6 @@ list_dll_files()
 export -f list_dll_files get_package_content
 
 list=all_dll.txt
-all_packages | parallel --bar -j32 list_dll_files | tee $list
+all_packages | parallel --bar --ungroup -j32 list_dll_files | tee $list
 sort $list > $list.sorted
 mv $list.sorted $list
