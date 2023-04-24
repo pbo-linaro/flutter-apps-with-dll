@@ -1,4 +1,4 @@
-This scripts can identify apps publishing .dll files
+This script can identify flutter apps publishing .dll files
 
 This is a script shell rewrite of:
 https://github.com/loic-sharma/pub_insights/
