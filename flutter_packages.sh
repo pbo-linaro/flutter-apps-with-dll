@@ -19,27 +19,20 @@ get_package_content()
     package=$1
     url=$(curl -s https://pub.dartlang.org/api/packages/$package |
           jq -r .latest.archive_url)
-    cached=cache/${package}_$(basename $url).content
+    version=$(basename $url)
+    cached=cache/${package}_${version}.content
     if [ ! -f $cached ]; then
         wget -q $content -O - | tar tzf - 2>/dev/null > $cached.part
         mv $cached.part $cached
     fi
-    cat $cached
+    cat $cached | sed -e "s/^/$package:$version:/"
 }
 
 list_dll_files()
 {
     package=$1
-    # get latest package published
-    content=$(curl -s https://pub.dartlang.org/api/packages/$package |
-              jq -r .latest.archive_url)
-
     # search for dll in list of files
-    for dll in $(get_package_content $package |
-                 grep 'dll$' |
-                 grep -v '/flutter_windows.dll$'); do
-        echo $package:$dll
-    done
+    get_package_content $package | grep 'dll$' | grep -v '/flutter_windows.dll$'
 }
 
 export -f list_dll_files get_package_content
