@@ -13,6 +13,20 @@ all_packages() {
     sed -e 's/\s\+"//' -e 's/".*//'
 }
 
+get_package_content()
+{
+    mkdir -p cache
+    package=$1
+    url=$(curl -s https://pub.dartlang.org/api/packages/$package |
+          jq -r .latest.archive_url)
+    cached=cache/${package}_$(basename $url).content
+    if [ ! -f $cached ]; then
+        wget -q $content -O - | tar tzf - 2>/dev/null > $cached.part
+        mv $cached.part $cached
+    fi
+    cat $cached
+}
+
 list_dll_files()
 {
     package=$1
@@ -21,11 +35,11 @@ list_dll_files()
               jq -r .latest.archive_url)
 
     # search for dll in list of files
-    for dll in $(wget -q $content -O - | tar tzf - 2>/dev/null | grep 'dll$'); do
+    for dll in $(get_package_content $package | grep 'dll$'); do
         echo $package:$dll
     done
 }
 
-export -f list_dll_files
+export -f list_dll_files get_package_content
 
 all_packages | parallel --bar -j200 list_dll_files
