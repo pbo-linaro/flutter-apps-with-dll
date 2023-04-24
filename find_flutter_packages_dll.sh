@@ -26,19 +26,19 @@ get_package_content()
         wget -q $url -O - | tar tzf - 2>/dev/null > $cached.part &&
         mv $cached.part $cached
     fi
-    cat $cached | sed -e "s/^/$package:$version:/"
+    cat $cached | sed -e "s/^/$package,/" -e 's#$#'",$url#"
 }
 
 list_dll_files()
 {
     package=$1
     # search for dll in list of files
-    get_package_content $package | grep 'dll$' | grep -v '/flutter_windows.dll$'
+    get_package_content $package | grep '\.dll' | grep -v '/flutter_windows.dll'
 }
 
 export -f list_dll_files get_package_content
 
-list=all_dll.txt
+list=all_dll.csv
 all_packages | parallel --bar -j64 list_dll_files | tee $list
 sort $list > $list.sorted
 mv $list.sorted $list

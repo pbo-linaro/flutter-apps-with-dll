@@ -7,4 +7,4 @@ Usage
 -----
 
 $ ./find_flutter_packages_dll.sh
-$ cat all_dll.txt
+$ cat all_dll.csv
