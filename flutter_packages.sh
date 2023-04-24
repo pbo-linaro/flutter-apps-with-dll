@@ -35,7 +35,9 @@ list_dll_files()
               jq -r .latest.archive_url)
 
     # search for dll in list of files
-    for dll in $(get_package_content $package | grep 'dll$'); do
+    for dll in $(get_package_content $package |
+                 grep 'dll$' |
+                 grep -v '/flutter_windows.dll$'); do
         echo $package:$dll
     done
 }
