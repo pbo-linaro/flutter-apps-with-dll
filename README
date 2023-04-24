@@ -6,5 +6,5 @@ https://github.com/loic-sharma/pub_insights/
 Usage
 -----
 
-$ ./flutter_packages.sh
+$ ./find_flutter_packages_dll.sh
 $ cat all_dll.txt
