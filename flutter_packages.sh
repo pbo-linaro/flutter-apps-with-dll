@@ -39,6 +39,6 @@ list_dll_files()
 export -f list_dll_files get_package_content
 
 list=all_dll.txt
-all_packages | parallel --bar --ungroup -j32 list_dll_files | tee $list
+all_packages | parallel --bar -j64 list_dll_files | tee $list
 sort $list > $list.sorted
 mv $list.sorted $list
