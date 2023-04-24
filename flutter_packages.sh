@@ -3,7 +3,7 @@
 set -euo pipefail
 
 curl --help > /dev/null
-jq --version > /dev/null 
+jq --version > /dev/null
 wget --version > /dev/null
 
 all_packages() {
@@ -44,4 +44,7 @@ list_dll_files()
 
 export -f list_dll_files get_package_content
 
-all_packages | parallel --bar -j200 list_dll_files
+list=all_dll.txt
+all_packages | parallel --bar -j200 list_dll_files | tee $list
+sort $list > $list.sorted
+mv $list.sorted $list
